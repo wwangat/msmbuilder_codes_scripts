@@ -9,7 +9,7 @@ left_vectors = w(:, sortindex);
 
 disp('data collected');
 
-RdBu = importdata('/home/wang/RdBu');
+RdBu = importdata('RdBu');
 
 RdBu = RdBu.data;
 

@@ -1,4 +1,3 @@
-#paste kcenters_none_stationary_population kcenters_transpose_stationary_population kcenters_mle_stationary_population | awk -F '+' '{print $1,$3}' | awk '{print $1,$3,$4}' | awk -F '(' '{print $2}' >temp
 paste kcenters_none_stationary_population kcenters_transpose_stationary_population kcenters_mle_stationary_population | awk -F '+' '{print $1,$3}' | awk '{print $1,$3,$4}' | awk -F '(' '{print $2}' >temp
 
 #gracebat -block temp -bxy 0:1 -block temp -bxy 0:2 -block temp -bxy 0:3 -a.xvg 
