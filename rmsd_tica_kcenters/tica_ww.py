@@ -6,9 +6,16 @@ from msmbuilder.dataset import dataset
 from matplotlib import pyplot as plt
 import os
 import sys
+from msmbuilder.featurizer import AtomPairsFeaturizer
+from msmbuilder.cluster import KCenters
+import numpy as np
+from msmbuilder.decomposition import tICA
+from msmbuilder.dataset import dataset
+from matplotlib import pyplot as plt
+import os
+import sys
 
-atom_pairs = np.loadtxt('pairlist.txt', dtype=int)  #atom pair, starting from 0
-nMicro=36
+atom_pairs = np.loadtxt('pairlist.txt', dtype=int)
 xtc_file_dir='../trajectories/'
 
 featurizer = AtomPairsFeaturizer(pair_indices=atom_pairs)
@@ -24,16 +31,22 @@ for trajfile in traj_list_array:
     temp=featurizer.fit_transform(xyz)
     ticadist.append(temp[0])
 
-tica_model=tICA(lag_time=20,n_components=4)
-
-tica_trajs=tica_model.fit_transform(ticadist)  #projected tica coordinate
-
+lag_time_list=range(1,20,1)
+for lag_time in lag_time_list:
+    tica_model=tICA(lag_time=lag_time,n_components=10)
+    tica_trajs=tica_model.fit(ticadist)  #projected tica coordinate
+    print lag_time, tica_trajs.timescales_[0],tica_trajs.timescales_[1],tica_trajs.timescales_[2],tica_trajs.timescales_[3],tica_trajs.timescales_[4]
 os.system("mkdir tica_projections/")
 
+
+tica_model=tICA(lag_time=lag_time,n_components=10)
+tica_trajs=tica_model.fit_transform(ticadist)  #projected tica coordinate
+
 for j in range(len(traj_list_array)):
-    np.savetxt('tica_projections/%s_tica.txt'%(traj_list_array[j][:-4]), tica_trajs[j][:,0:1])
+    np.savetxt('tica_projections/%s_tica.txt'%(traj_list_array[j][:-4]), tica_trajs[j][:,0:2])
 
 
+exit()
 
 kcenters=KCenters(n_clusters=nMicro, metric='euclidean', random_state=0)
 
