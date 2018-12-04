@@ -6,14 +6,6 @@ from msmbuilder.dataset import dataset
 from matplotlib import pyplot as plt
 import os
 import sys
-from msmbuilder.featurizer import AtomPairsFeaturizer
-from msmbuilder.cluster import KCenters
-import numpy as np
-from msmbuilder.decomposition import tICA
-from msmbuilder.dataset import dataset
-from matplotlib import pyplot as plt
-import os
-import sys
 
 atom_pairs = np.loadtxt('pairlist.txt', dtype=int)
 xtc_file_dir='../trajectories/'
