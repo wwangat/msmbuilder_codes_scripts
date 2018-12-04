@@ -1,3 +1,4 @@
+%%%%%%%%%%%get the tica importance matrices
 file='atom1_atom2_from1_tic1_square.contribution';
 a = importdata(file);  %max index:1583
 index_keep = importdata('indexes_keep_from1');

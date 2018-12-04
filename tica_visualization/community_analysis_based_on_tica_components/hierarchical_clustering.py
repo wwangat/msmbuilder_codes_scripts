@@ -1,3 +1,4 @@
+############clustering the atoms into communities, generate the good initial clustering for the optimization code
 import numpy as np
 import os
 from lof import LocalOutlierFactor

@@ -1,3 +1,4 @@
+%%%%%%%%%%%evaluate when the tica eigenvectors become invariant%%%%%%%%%%%%%%%%%%%%
 covariance_matrix = importdata('tica_covariance_matrix_corr280.txt'); % calculated using the lagtime=10 data
 %comp1 = 1;
 %comp2 = 2;
