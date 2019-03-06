@@ -4,6 +4,7 @@ Function: Plot contour map
 Input: A file that has the following format
     Microstate_trajectory_name    frameid(start fro 0)  microstate_id(start from 0)  macrostate_id(start from 0)  tIC1_coords    tIC2_coords    tIC3_coords
 
+acknowledge yyq
 """
 import numpy as np
 import matplotlib.pyplot as plt

@@ -1,3 +1,4 @@
+#code contributed by qiao qin
 import os
 import os.path
 from numpy import *

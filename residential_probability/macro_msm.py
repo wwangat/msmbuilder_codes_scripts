@@ -1,3 +1,4 @@
+#code contributed by qiao qin
 from numpy import *
 import optparse
 import sys
