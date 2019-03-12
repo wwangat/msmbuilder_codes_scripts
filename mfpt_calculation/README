@@ -1,0 +1,8 @@
+MFPT calculation based on re-sampling the column normalized microstate TPM
+
+dependency: basic c++ libraries
+
+
+mfpt_basedon_TPM_hardassign.cpp -> used for the hard clustering
+
+mfpt_basedon_TPM_softassign.cpp -> used for the soft clustering
