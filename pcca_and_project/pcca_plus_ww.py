@@ -63,12 +63,21 @@ np.savetxt("kCenters_stationary_population", msm.populations_)
 #print TPM
 #print "having calculated the row normalized TPM"
 
+
+
+'''
+
+Below are using pyemma's pcca plus to do soft lumping, 
+The coarse-grained matrix they output is A'*T*A*inv(A'*A)
+
+'''
 pcca_result = PCCA(msm.transmat_, nMacro)
 print "now writing the pcca+ assignment"
 
 np.savetxt("pcca_plus_%d_state_mapping.txt"%(nMacro), pcca_result.metastable_assignment, fmt='%d')
 np.savetxt("pcca_plus_%d_state_stationary_population.txt"%(nMacro), pcca_result.coarse_grained_stationary_probability)
 np.savetxt("pcca_plus_%d_state_transmat.txt"%(nMacro), pcca_result.coarse_grained_transition_matrix)
+np.savetxt("pcca_plus_%d_state_membership.txt"%(nMacro), pcca_result.memberships)
 
 #begin to save "trajectory_name, frame_number, microstate assignment, macrostate assignment"
 print traj_num
