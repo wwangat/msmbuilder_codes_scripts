@@ -1,4 +1,5 @@
 ##update new files
+git commit -m "new message"
 git add .
 git commit -m "new message"
 git add -u
