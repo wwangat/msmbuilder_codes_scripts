@@ -71,6 +71,16 @@ pdb_name='ala2.pdb' #name for the topology file
 trajname_list='trajname.list' #the name list for the trajectories in trajectory_dir
 pairwise_distances_files_list='pairwise_distances_files_list.list'
 
+'''
+here the pairwise_distances_files_list.list contains many lines, each line shows the path of the pairwise distance file
+e.g.,
+pairdist.list1
+pairdist.list2
+pairdist.list3
+
+The index for atom pairs in each file('pairdist.list1') should start from 0
+'''
+
 resultdir = './results' #the output folder
 
 if not os.path.exists(resultdir):
@@ -86,6 +96,7 @@ print("the shutffled trajectory list reading into memory are as follows:")
 print(traj_list_array)
 
 
+#specify your prefered parametric space
 #Parameter range we need to tune in the process
 n_tics_range=range(2, 3, 1)
 n_Micro_range=range(100, 200, 100)
