@@ -1,9 +1,10 @@
 
 # coding: utf-8
 
-# In[137]:
+# In[ ]:
 
-get_ipython().magic(u'matplotlib inline')
+
+get_ipython().run_line_magic('matplotlib', 'inline')
 #display images generated in line
 
 '''
@@ -39,7 +40,8 @@ Dependency of this script: msmbuilder (>3.6.0 version), pyemma 2
 '''
 
 
-# In[153]:
+# In[ ]:
+
 
 #load all the modules needed in the MSM analysis of the alanine dipeptide system
 import os
@@ -55,8 +57,6 @@ from msmbuilder.dataset import dataset
 from msmbuilder.msm import implied_timescales, MarkovStateModel
 from msmbuilder.lumping import PCCAPlus
 import pyemma.msm as pyemma_msm
-from pyemma.plots import plot_free_energy
-import msmtools.analysis
 
 import matplotlib
 #matplotlib.use('Agg')
@@ -68,8 +68,12 @@ import mdtraj as md
 from msmbuilder.io.sampling import sample_dimension
 import random
 
+from pyemma.plots import plot_free_energy
+import msmtools.analysis
 
-# In[154]:
+
+# In[ ]:
+
 
 #functions that will be used in the analysis
 
@@ -207,15 +211,20 @@ def evaluate_dominant_paths(TPM, lagtime, source_state, sink_state, time_unit):
     for i in range(len(paths)):
         print(paths[i], '\t','%3.1f'%(100.0*pathfluxes[i]/tpt.total_flux))
     print('MFPT from state %d to state %d  = %f %s'% (source_state, sink_state, M.mfpt(source_state, sink_state)*lagtime, time_unit))
+#msmbuilder's mpft
 
-    #Evaluate the MFPT and TPT based on the microstate model and the micro-to-macro mapping relationship, analytically
-def calculate_macro_TPT_and_MFPT_basedon_micro_MSM(microTPM, mapping, source_state, sink_state, lagtime, time_unit):
+
+
+# In[ ]:
+
+
+#Evaluate the MFPT and TPT based on the microstate model and the micro-to-macro mapping relationship, analytically
+def calculate_macro_TPT_and_MFPT_basedon_micro_MSM(microTPM, mapping, source_state, sink_state, lagtime, time_unit, verbose):
     P = pyemma_msm.markov_model(microTPM) #TPM is row-normalized
     A = np.where(mapping==source_state)[0]
     B = np.where(mapping==sink_state)[0]
-    print('MFPT from state %d to state %d = %f %s'%(source_state, sink_state, msmtools.analysis.mfpt(microTPM, A, B)*lagtime, time_unit))
-    #get TPT
-
+    print('MFPT from state %d to state %d = %f %s'%(source_state, sink_state, msmtools.analysis.mfpt(microTPM, B, A)*lagtime, time_unit))
+    #get TPT,  #bug fixed on June 4, 2019
     tpt = pyemma_msm.tpt(P, A, B)
     (paths,pathfluxes) = tpt.pathways()
     cumflux = 0
@@ -229,14 +238,16 @@ def calculate_macro_TPT_and_MFPT_basedon_micro_MSM(microTPM, mapping, source_sta
     for line in open('tpt_pathlump.log'):
         print(line.strip())
     print('############################################################')
-    print("more details about the paths in the microstate form")
-    print("Path flux\t\t%path\t%of total\tpaths")
-    for i in range(len(paths)):
-        cumflux += pathfluxes[i]
-        print(pathfluxes[i],'\t','%3.1f'%(100.0*pathfluxes[i]/tpt.total_flux),'%\t','%3.1f'%(100.0*cumflux/tpt.total_flux),'%\t',paths[i])
+    if(verbose == 'on'):
+        print("more details about the paths in the microstate form")
+        print("Path flux\t\t%path\t%of total\tpaths")
+        for i in range(len(paths)):
+            cumflux += pathfluxes[i]
+            print(pathfluxes[i],'\t','%3.1f'%(100.0*pathfluxes[i]/tpt.total_flux),'%\t','%3.1f'%(100.0*cumflux/tpt.total_flux),'%\t',paths[i])
 
 
-# In[155]:
+# In[ ]:
+
 
 #specify the input files:
 #1. folders to store the pdb file and the trajectories (in xtc or dcd format)
@@ -252,7 +263,8 @@ atom_pair_list='pairdist.list' #the pairwise distances list used in tICA
 resultdir = './results'
 
 
-# In[156]:
+# In[ ]:
+
 
 if not os.path.exists(resultdir):
     os.makedirs(resultdir)
@@ -265,7 +277,8 @@ for line in open(trajname_list):
     traj_list_array.append(line.strip())
 
 
-# In[157]:
+# In[ ]:
+
 
 #step 1.0: tICA
 #Select kinetic slow variables via tICA (time-lagged independent component analysis)
@@ -292,7 +305,8 @@ sampling_along_tIC(resultdir, 'samples_tic1.png', tica_trajs, trajectory_dir, tr
 print("You can use vmd to visualize the tica-dimension-tIC1.xtc file")
 
 
-# In[158]:
+# In[ ]:
+
 
 #step 1.1: split the conformations into hundreds of microstates
 #perform kCenters on the tIC subspace
@@ -306,7 +320,8 @@ plt.figure()
 plot_states_on_tic_space(resultdir, 'micorstate.png', tica_trajs, microstate_sequences.labels_, 1, 2)
 
 
-# In[159]:
+# In[ ]:
+
 
 #plot the microstate implied timescale, which will show how many macrostates we need
 plt.figure()
@@ -315,13 +330,12 @@ msm_timescales = implied_timescales(microstate_sequences.labels_, lag_times, n_t
 plot_impliedtimescale(resultdir, 'microstate_its.png', lag_times, msm_timescales, 'ps')
 
 
-# In[160]:
+# In[ ]:
 
-####Evaluate the thermodynamics and kinetics from the microstate MSM
+
 #the first dynamic eigenvector is associated to the slowest transitions in the dataset
 #we can understand the physical meaning of the first eigenmode through sampling the conformations
-micro_msm_lagtime=4
-msm = MarkovStateModel(lag_time=micro_msm_lagtime, reversible_type='transpose', n_timescales=3, ergodic_cutoff='off') #lag time should be chosen such that the model becomes Markovian
+msm = MarkovStateModel(lag_time=4, reversible_type='transpose', n_timescales=3, ergodic_cutoff='off') #lag time should be chosen such that the model becomes Markovian
 #n_timescale specify the number of dynamic mode (the 1st one is the 2nd eigenvector of TPM) that outputs
 msm.fit(microstate_sequences.labels_)
 msm_eigen_trajs = msm.eigtransform(microstate_sequences.labels_)
@@ -330,17 +344,8 @@ print("the timescale associated with the slowest collective motion in the system
 print("using vmd to open msm-1-dynamic-mode.xtc, to intepret the slowest dynamic mode of the system")
 
 
-# In[161]:
+# In[ ]:
 
-##Draw the potential of mean force, newly added
-pi_0 = msm.populations_[np.concatenate(microstate_sequences.labels_, axis=0)] #microstate stationary population
-xall = np.concatenate(tica_trajs)[:, 0]
-yall = np.concatenate(tica_trajs)[:, 1]
-plot_free_energy(xall, yall, weights=pi_0, logscale=True, nbins=100, cbar=True) #if specify "None", then not weighted by population
-plt.savefig(resultdir+"/microstate_msm_PMF.png")
-
-
-# In[162]:
 
 #judging from the above implied timescale, we need to lump the microstates into 3 macrostates
 #lump kinetically close microstates into a few macrostates using PCCA+ algorithm, which will facilitate the visualization and intereptation of kinetics of the system
@@ -357,28 +362,17 @@ plt.figure()
 plot_Ramachandran(resultdir, 'macrostate_Ramachandran.png', phi_psi, macro_trajs)
 
 
-# In[163]:
+# In[ ]:
 
-##Evaluate the thermodynamics and kinetics of the system based on macrostate-MSM
+
 #sample representative structures for each macrostate, used for visualization
+
 sampling_representative_structures_for_MSM(resultdir, macro_trajs, trajectory_dir, traj_list_array, pdb_name)
 print("you can now visualize the representative structures using vmd")
 
 
-# In[164]:
+# In[ ]:
 
-##For most of the cases, a Markovian macrostate model cannot be obtained, therefore we can evaluate the kinetics of the macrostate model
-##based on the microstate MSM and the micro-to-macro mapping relationship
-#newly added codes
-
-source_state = 0
-sink_state = 1
-calculate_macro_TPT_and_MFPT_basedon_micro_MSM(msm.transmat_, pcca.microstate_mapping_, source_state, sink_state, micro_msm_lagtime, 'ps')
-
-#here the msm.transmat_ is the microstate TPM
-
-
-# In[165]:
 
 #plot the macrostate implied timescale, we can then select proper lag time to build the macrostate MSM
 plt.figure()
@@ -387,7 +381,21 @@ msm_timescales = implied_timescales(macro_trajs, lag_times, n_timescales=3,msm=M
 plot_impliedtimescale(resultdir, 'macrostate_its.png', lag_times, msm_timescales, 'ps')
 
 
-# In[166]:
+# In[ ]:
+
+
+#evaluate the dynamics based on the microstate MSM
+lagtime = 10 #microstate Markovian lag time
+microstate_msm = MarkovStateModel(lag_time=lagtime, reversible_type='transpose', n_timescales=3, ergodic_cutoff='off') #lag time should be chosen such that the model becomes Markovian
+#n_timescale specify the number of dynamic mode (the 1st one is the 2nd eigenvector of TPM) that outputs
+microstate_msm.fit(microstate_sequences.labels_)
+source_state = 1 #specify the source state you want to investigate
+sink_state = 2 #specify the sink macrostate you want to investigate
+calculate_macro_TPT_and_MFPT_basedon_micro_MSM(microstate_msm.transmat_, pcca.microstate_mapping_, source_state, sink_state, lagtime, '0.1 ps', 'off')
+
+
+# In[ ]:
+
 
 #Build the macrostate MSM and extract kinetics & thermodynamics based on the MSM
 lag_time = 12 #the lag time where implied timescale reaches plateau 
@@ -403,32 +411,13 @@ print("the slowest transition happens between the macrostates with +ev & -ev eig
 print("Stationary population for the macrostates:", msm.populations_)
 
 #get the transition pathways and mean first passage time from one state to another, using transition path theory (tpt)
-source_state = 0
-sink_state = 1
+source_state = 1
+sink_state = 2
 evaluate_dominant_paths(msm.transmat_, lag_time, source_state, sink_state, 'ps') #play with source state and sink state
 
 
-# In[167]:
+# In[ ]:
+
 
 print("end of the example of alanine dipeptide")
-
-
-# In[ ]:
-
-
-
-
-# In[ ]:
-
-
-
-
-# In[ ]:
-
-
-
-
-# In[ ]:
-
-
 
