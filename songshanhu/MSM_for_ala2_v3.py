@@ -238,6 +238,7 @@ def calculate_macro_TPT_and_MFPT_basedon_micro_MSM(microTPM, mapping, source_sta
     for line in open('tpt_pathlump.log'):
         print(line.strip())
     print('############################################################')
+    cumflux = 0
     if(verbose == 'on'):
         print("more details about the paths in the microstate form")
         print("Path flux\t\t%path\t%of total\tpaths")
