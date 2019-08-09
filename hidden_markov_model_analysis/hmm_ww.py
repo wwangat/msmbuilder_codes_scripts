@@ -4,6 +4,9 @@ Function:applying the hidden markov model
 Dependency: pyemma
 Input: non-markovian microstate sequences
 Output: emisson, stationary population, transition probability matrix, membership function, Implied timescale plot
+
+Reference:F. Noe, H. Wu, J. Prinz et al., Projected and hidden Markov models for calculating kinetics and metastable states of complex molecules
+
 """
 from pyemma import msm
 import numpy as np

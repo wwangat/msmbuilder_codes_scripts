@@ -1,0 +1,18 @@
+Sometimes we want to compare different system, for example "widetype" and "mutant" systems using MSM. 
+
+As the phase space distribution for different systems may vary, the MD simulation will cover different regions for each system.
+
+Based on how we perform microstate state decomposition, we have three different ways to use MSM in this case:combined MSM, projected MSM and separate MSM.
+
+combined MSM: combine trajectories from multiple-systems and then perform clustering. Then separate the assignments and build MSM separately
+
+projected MSM: clustering for one system, then fit_predict for other systems. Then build MSM for each of them
+
+Separate MSM: build MSM for each system separately...
+
+
+
+
+
+#########################
+ACTUALLY we can use other ways to study this problem, such as MAXIMUM-CALIBER (refer to:Volez Vincent, A Maximum-Caliber Approach to Predicting Perturbed Folding Kinetics Due to Mutations

@@ -1,13 +1,12 @@
 /*
  * ============================================================================
- *       Filename:  main_mfpt.cpp
- *    Description:  input microstate chain, output mfpt by directly counting 
- *          Usage:  ./main.o traj1 traj2, ..., traj_len, mapping
- *                   //input microstate trajectory, then using MC to extend the trajectory
- *                  ./main.o traj1 traj2, ..., traj_len  
- *                  //only input long macrostate trajectories
+ *       Filename:  mfpt_basedon_TPM_softassign.cpp
+ *    Description:  input parameters & microstate TPM, get MFPT by markov chain monte carlo
+ *          Usage:  g++ mfpt_basedon_TPM_softassign.cpp;./a.out
  *        Created:  2016-07-01 20:05
  *         Author:  Wei WANG        (wwangat@gmail.com)
+ *	   Parameters:  nMacro, nMicro, MCtime, syn_len, timeunit, lagtime, ProbMatrix, membership
+ *         Output:  MFPT from row state to col state, in microsecond unit
  * ============================================================================
  */
  #include <iostream>
@@ -35,23 +34,19 @@ int main()
     srand(a);
     clock_t t=clock();
     double cpu_time_used;
-    int nMacro=5;
-    int nMicro = 1483;
-    int MCtime = 1000000;
-    int syn_len = 1;
+    int nMacro=5; //input: number of macrostates
+    int nMicro = 1483; //input:number of microstates 
+    int MCtime = 1000000;//length of each markov chain
+    int syn_len = 1;//number of markov chains
     int *macro, *temp_micro;
-    double timeunit=1e-4;//unit:micro-second
-    double lagtime=800; 
+    double timeunit=1e-4;//unit:micro-second, time interval
+    double lagtime=800; //microstate markovian lagtime
     double **mfpt_matrix=allomatrix_double(nMacro, nMacro);
     double **ProbMatrix = allomatrix_double(nMicro, nMicro);
     
-    readmatrix("mm", ProbMatrix, nMicro); //here we should input the column normalized tpm
+    readmatrix("microstate_tpm_col_normalized", ProbMatrix, nMicro); //here we should input the column normalized tpm
 //    int mapping[20] = {0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1};
 
-    int mapping[nMicro];
-    readarray("pcca_plus_5_state_mapping.txt", mapping);//we don't need this for the soft partitioning
-
-//    int mappig[6] = {0,1,2, 3, 4, 5};
     cout<<"step 2: artificially generate many short microstate trajectory based on the matrix calculated above, each one has a length of "<<MCtime<<endl;
     double **mfpt_count = allomatrix_double(nMacro, nMacro);
     double **mfpt_time = allomatrix_double(nMacro, nMacro);
@@ -72,20 +67,13 @@ int main()
 
 /// revised on Mar 13, 2019 by ww, tailored for the soft partitioning
     double **membership=allomatrix_double(nMicro, nMacro);    
-    readmatrix("pcca_plus_5_state_memberships", membership, nMacro);
+    readmatrix("pcca_plus_5_state_memberships", membership, nMacro);//input: membership function, soft assignment
 ///
     for (int m=0; m<syn_len; m++){
-/*        traj_len[0] = resampling(ProbMatrix, macro, mapping, nMicro, nMacro, MCtime);
-        cout<<"traj length of this one:" << traj_len[0] << '\n';
-        if(traj_len[0]!= MCtime){
-            mfpt_direct_count_multi(macro, traj_len, 1, nMacro, mfpt_count, mfpt_time);
-        }
-*/
         traj_len[0] = MCtime;
         resampling(ProbMatrix, temp_micro, nMicro, MCtime);
-        //trim the trajectory, remove the first 30% sampling points
 
-        double remove_ratio=0.2;
+        double remove_ratio=0.2;//trim the first 20% sampled points
 
         int trim_traj_len[0];
         trim_traj_len[0]=(1-remove_ratio)*traj_len[0];
@@ -127,12 +115,6 @@ int main()
     }
     cout<<"<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"<<endl;
     free(count_num);
-/*    for(int m=0; m<nMacro; m++){
-        for(int n=0; n<nMacro; n++){
-            mfpt_matrix[m][n] = mfpt_time[m][n]/mfpt_count[m][n];
-        }
-    }
-*/
     for (j = 0; j<nMicro;j++){
         free(ProbMatrix[j]);
         free(membership[j]);

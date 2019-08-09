@@ -1,0 +1,6 @@
+Transition path theory to obtain dominant paths from one metastable states (macorstates) to another, based on a microstate MSM
+
+It often appears with MFPT, where MFPT can be obtained analytically (refer to ../songshanhu folder for more details) or numerically (refere to ../mfpt_calculation_mcmc for more details))
+
+tpt_msm.py: input are the microstate trajlist and micro-to-macro mapping, build MSM inside the codes
+tpt_matrix.py: input is the row normalized microstate transition probability matrix (can be from transpose or mle) together with the micro-to-macro mapping

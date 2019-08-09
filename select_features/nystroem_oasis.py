@@ -2,6 +2,7 @@ import numpy as np
 from pyemma.coordinates.transform.tica import *
 from pyemma.coordinates.transform._tica_base import *
 from pyemma.coordinates.transform.nystroem_tica import *
+#reference:Richard Baraniuk et al., Rapid calculation of molecular kinetics using compressed sensing
 
 input_feature_data=[] #input features
 for line in open('feature_trajlist.list'):

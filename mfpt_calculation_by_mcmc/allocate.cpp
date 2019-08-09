@@ -36,31 +36,3 @@
  	}
  	return matrix;
  }
-/*  
-double ***allo3dmatrix_double(int row, int col, int height){
-    double ***matrix;
-    matrix = (double ***)malloc(row*sizeof(double **));
-    int i, j;
-    for (i=0; i<row;i++){
-        matrix[i] = (double **)malloc(col*sizeof(double *)){
-            for (j = 0; j<col; j++){
-                matrix[i][j] = (double *)malloc(height*sizeof(double));
-            }
-        }
-    }
-    return matrix;
-}
-int ***allo3dmatrix_int(int row, int col, int height){
-    int ***matrix;
-    matrix = (int ***)malloc(row*sizeof(int **));
-    int i, j;
-    for (i=0; i<row;i++){
-        matrix[i] = (int **)malloc(col*sizeof(int *)){
-            for (j = 0; j<col; j++){
-                matrix[i][j] = (int *)malloc(height*sizeof(int));
-            }
-        }
-    }
-    return matrix;
-}
-*/

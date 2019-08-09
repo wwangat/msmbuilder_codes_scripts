@@ -94,7 +94,7 @@ print 'Total TPT flux = ', tpt.total_flux
 print "#############################################################"
 #print "all the pathways from unfold state to fold state are:"
 tpt.pathways()
-(paths,pathfluxes) = tpt.pathways(fraction=0.95)
+(paths,pathfluxes) = tpt.pathways(fraction=1.0)
 cumflux = 0
 print "Path flux\t\t%path\t%of total\tpath"
 for i in range(len(paths)):

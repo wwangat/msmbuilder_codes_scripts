@@ -1,0 +1,4 @@
+methods for visualizing tica meaning:
+
+(1) sampling along tic: refer to ../songshanhu folder for the examples
+(2) using mds to sample: see mds_reconstruction/ for more details

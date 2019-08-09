@@ -1,0 +1,11 @@
+#IDEA AND CODE CONTRIBUTED BY PROF.FREDERICK FU KIT SHEONG
+
+only when the input features for tica are pairwise distances
+
+input: tica components (eigenvectors), PDB, atom_indices
+idea: (1) initialize the pairwise distnaces using atomic distances in PDB
+      (2) Propagate the distances using tica components as velocity
+      (3) After each propagation, using classical multi-dimensional scaling to reconstruct a new atomic structure
+      (4) Visualize the trajectory using VMD
+
+After configurated the parameters, run the code by "python MDs.py"

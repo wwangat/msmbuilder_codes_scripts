@@ -1,11 +1,9 @@
 /*
  * ============================================================================
- *       Filename:  main_mfpt.cpp
- *    Description:  input microstate chain, output mfpt by directly counting 
- *          Usage:  ./main.o traj1 traj2, ..., traj_len, mapping
- *                   //input microstate trajectory, then using MC to extend the trajectory
- *                  ./main.o traj1 traj2, ..., traj_len  
- *                  //only input long macrostate trajectories
+ *       Filename:  mfpt_basedon_TPM_hardassign.cpp
+ *    Description:  input microstate TPM & micro-to-macro mapping, output MFPT. method: markov chain monte carlo
+ *          Usage:  g++ mfpt_basedon_TPM_hardassign.cpp;./a.out
+ *     Parameters:  nMacro, nMicro, MCtime, syn_len, timeunit, lagtime, ProbMatrix, mapping.
  *        Created:  2016-07-01 20:05
  *         Author:  Wei WANG        (wwangat@gmail.com)
  * ============================================================================
@@ -37,22 +35,21 @@ int main()
     double cpu_time_used;
 
 //parameters you may change
-    int nMacro=4;
-    int nMicro = 1483;
-    int MCtime = 5000000;
-    int syn_len = 1;
+    int nMacro=4;  //input; number of macrostates
+    int nMicro = 1483; //input: number of microstates
+    int MCtime = 5000000; //input:the length of each markov chain
+    int syn_len = 1; //input: number of markov chains
     int *macro, *temp_micro;
-    double timeunit=1e-4;//unit:micro-second
-    double lagtime=800; 
+    double timeunit=1e-4;//unit:micro-second, the time unit for each saving interval
+    double lagtime=800; //input:the microstate markovian lag-time
 //
+
     double **mfpt_matrix=allomatrix_double(nMacro, nMacro);
     double **ProbMatrix = allomatrix_double(nMicro, nMicro);
     
-    readmatrix("kcenter_microstate_transpose_transmat_Transposed.txt", ProbMatrix, nMicro);//the input TPM should be column normalized, plz make sure that
-//    int mapping[20] = {0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1};
+    readmatrix("microstate_TPM_col_normalized.txt", ProbMatrix, nMicro);//input: the input TPM should be column normalized, plz make sure that. can be either from transpose or mle
     int mapping[nMicro];
-    readarray("pcca_plus_4_state_mapping.txt", mapping);//change the filename
-//    int mappig[6] = {0,1,2, 3, 4, 5};
+    readarray("pcca_plus_4_state_mapping.txt", mapping);//input: the lumping relationship. change the filename
     cout<<"step 2: artificially generate many short microstate trajectory based on the matrix calculated above, each one has a length of "<<MCtime<<endl;
     double **mfpt_count = allomatrix_double(nMacro, nMacro);
     double **mfpt_time = allomatrix_double(nMacro, nMacro);
@@ -71,16 +68,10 @@ int main()
     }
     float total_count=0;
     for (int m=0; m<syn_len; m++){
-/*        traj_len[0] = resampling(ProbMatrix, macro, mapping, nMicro, nMacro, MCtime);
-        cout<<"traj length of this one:" << traj_len[0] << '\n';
-        if(traj_len[0]!= MCtime){
-            mfpt_direct_count_multi(macro, traj_len, 1, nMacro, mfpt_count, mfpt_time);
-        }
-*/
         traj_len[0] = MCtime;
         resampling(ProbMatrix, temp_micro, nMicro, MCtime);
         //trim the trajectory, remove the first 30% sampling points
-        double remove_ratio=0.2;
+        double remove_ratio=0.2; //input: remove the first 20% of samples
         int trim_traj_len[0];
         trim_traj_len[0]=(1-remove_ratio)*traj_len[0];
         int *new_temp_micro=alloarray_int(trim_traj_len[0]);
@@ -117,12 +108,6 @@ int main()
         {cout<<"For state "<<kk<<":, count number: ,"<<count_num[kk]<<endl;}
         cout<<"<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"<<endl;
     free(count_num);
-/*    for(int m=0; m<nMacro; m++){
-        for(int n=0; n<nMacro; n++){
-            mfpt_matrix[m][n] = mfpt_time[m][n]/mfpt_count[m][n];
-        }
-    }
-*/
     for (j = 0; j<nMicro;j++){
         free(ProbMatrix[j]);
     }

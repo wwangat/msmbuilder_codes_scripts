@@ -138,7 +138,7 @@ tpt=msm.tpt(TPM, set1, set2)
 #print "#############################################################"
 ##print "all the pathways from pre-translocation state to backtracked state are:"
 #tpt.pathways()
-(paths,pathfluxes) = tpt.pathways(fraction=0.95)
+(paths,pathfluxes) = tpt.pathways(fraction=1.0) #maximum iteratively give 1000 different paths. You can refer to modified Dijkstra's algorithm and flux decomposition to learn more about it
 cumflux = 0
 print "in macrostate form"
 print "Path flux\t\t%path\t%of total\tpath"

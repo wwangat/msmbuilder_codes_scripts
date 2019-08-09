@@ -1,0 +1,9 @@
+MFPT calculation based on re-sampling the column normalized microstate TPM, using markov chain monte carlo
+
+better run multiple times to get the mean & std for mfpt
+
+dependency: basic c++ libraries
+
+mfpt_basedon_TPM_hardassign.cpp -> used for the hard clustering, clustering results as the input
+
+mfpt_basedon_TPM_softassign.cpp -> used for the soft clustering, pcca+ membership as the input
