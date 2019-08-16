@@ -1,0 +1,3 @@
+../mfpt_analysis/TrimmedMicroTrajectory1.txt
+../mfpt_analysis/TrimmedMicroTrajectory2.txt
+../mfpt_analysis/TrimmedMicroTrajectory3.txt
